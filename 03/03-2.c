@@ -50,7 +50,6 @@ int calcLineValue() {
 
   // user pointers to find matching element
   // two pointers 
-  //printf("%c %c %c\n", triple.tl[triple.fllen], triple.sl[triple.sllen], triple.fl[triple.tllen]);
   int i = 0, j = 0, k = 0;
 
   while (i < triple.fllen && j < triple.sllen && k < triple.tllen) {
