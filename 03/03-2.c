@@ -51,6 +51,7 @@ int calcLineValue() {
   // user pointers to find matching element
   // two pointers 
   int i = 0, j = 0, k = 0;
+  printf("%c %c %c\n", triple.fl[triple.fllen], triple.sl[triple.sllen], triple.tl[triple.tllen]);
 
   while (i < triple.fllen && j < triple.sllen && k < triple.tllen) {
     // advance i and j until they are equal
@@ -60,20 +61,18 @@ int calcLineValue() {
       }
       j++;
     }
+    printf("%c %c\n", triple.sl[j], triple.fl[i]);
 
-    // advance k until it is equal or greater than 
-    while (triple.tl[k] < triple.fl[i]) {
+    // scan k until for match 
+    while (k < triple.tllen) {
+      if (triple.tl[k] == triple.fl[i]) {
+        return calcCharValue(triple.fl[i]);
+      }
       k++;
     }
 
-    // if all are equal return the value
-    if (triple.fl[i] == triple.sl[j] && triple.sl[j] == triple.tl[k]) {
-      printf("%c %c %c\n", triple.tl[k], triple.sl[j], triple.fl[i]);
-      return calcCharValue(triple.fl[i]);
-    }
-
-    // if all are not equal advance i and repeat
-    i++;
+    k = 0;
+    i++, j++;
   }
 
   return 0;
@@ -90,7 +89,7 @@ void writeString(char* fl, char line[MAX_LEN], int len) {
   for (int i = 0; i < len; i++) {
     fl[i] = line[i];
   }
-  qsort(fl, len-1, sizeof(char), compare_asc);
+  qsort(fl, len, sizeof(char), compare_asc);
 }
 
 int sumLines(FILE *fp)
@@ -114,19 +113,19 @@ int sumLines(FILE *fp)
       {
       case 0:
         triple.fl = (char*) malloc(i);
-        triple.fllen = i-1;
+        triple.fllen = i;
         writeString(triple.fl, fullLine, i);
         line++;
         break;
       case 1:
         triple.sl = (char*) malloc(i);
-        triple.sllen = i-1;
+        triple.sllen = i;
         writeString(triple.sl, fullLine, i);
         line++;
         break;
       case 2:
         triple.tl = (char*) malloc(i);
-        triple.tllen = i-1;
+        triple.tllen = i;
         writeString(triple.tl, fullLine, i);
         sum += calcLineValue();
         line = 0;

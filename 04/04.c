@@ -16,9 +16,7 @@
 
 int parse(char str[MAX_LEN])
 {
-  int ranges[4];
-  // split by ,
-  // split by ","
+  puts(str);
   int i = 0;
   char *token = strtok(str, ",");
   char *array[2];

@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
 
 /*
             [J]             [B] [W]
@@ -11,48 +12,68 @@
 [L] [V] [R] [V] [W] [P] [C] [P] [J]
 [M] [Z] [V] [S] [S] [V] [Q] [H] [M]
 [W] [B] [H] [F] [L] [F] [J] [V] [B]
- 1   2   3   4   5   6   7   8   9 
+ 1   2   3   4   5   6   7   8   9
 */
 
 char *startBoard[] = {
-  "", "WMLF", "BZVMF", "HVRSLQ", "FSVQPMTJ",
-  "LSW", "FVPMRJW", "JQCPNRF", "VHPSZWRB",
-  "BMJCGHZW",
+    "",
+    "WMLF",
+    "BZVMF",
+    "HVRSLQ",
+    "FSVQPMTJ",
+    "LSW",
+    "FVPMRJW",
+    "JQCPNRF",
+    "VHPSZWRB",
+    "BMJCGHZW",
 };
 
 #define MAX_LEN 200
 #define CHARS 56
+#define CONTAINERS_LENGTH 10
 
-char *containers[10];
+char *containers[CONTAINERS_LENGTH];
 
-void printBoard() {
-  for (int i = 0; i < 10; i++) {
-    if (i == 0) continue;
+void errorCheck()
+{
+  int sum = 0;
+  for (int i = 0; i < 10; i++)
+  {
+    if (i == 0)
+      continue;
+    sum += strlen(containers[i]);
+  }
+  assert(sum == CHARS);
+}
+
+void printBoard()
+{
+  for (int i = 0; i < 10; i++)
+  {
+    if (i == 0)
+      continue;
     printf("%d - %s\n", i, containers[i]);
   }
   puts("\n ");
 }
 
-void slice(char *str, char *result, size_t start, size_t end)
+void cut(char *str, char *result, size_t start, size_t end)
 {
-  strncpy(result, str + start, end - start);
-  for (int i = start; i < end; i++) {
+  strlcpy(result, str + start, (end + 1) - start);
+  for (int i = start; i < end; i++)
+  {
     str[i] = '\0';
   }
 }
 
-void execute(char *commands[3])
+void execute(int count, int from, int to)
 {
-  int amt = atoi(commands[0]);
-  int from = atoi(commands[1]);
-  int to = atoi(commands[2]);
-
   // copy amt chars from from
-  char *temp = (char *)malloc(amt * sizeof(char));
+  char *temp = (char *)malloc((count + 1) * sizeof(char));
   int end = strlen(containers[from]);
-  int start = end - amt;
+  int start = end - count;
 
-  slice(containers[from], temp, start, end);
+  cut(containers[from], temp, start, end);
 
   // add temp to to
   strcat(containers[to], temp);
@@ -62,24 +83,14 @@ void execute(char *commands[3])
 
 int parse(char *str)
 {
+  int count, from, to;
 
-  char *parsed[3];
-  int i = 1;
-  char *token = malloc(MAX_LEN * sizeof(char));
-  token = strtok(str, " ");
-
-  while (token != NULL)
+  while (scanf(" move %d from %d to %d", &count, &from, &to)==3)
   {
-    if (i++ % 2 == 0)
-    {
-      parsed[i / 2 - 1] = token;
-    }
-    token = strtok(NULL, " ");
+    assert(from >= 1 && from <= CONTAINERS_LENGTH);
+    printf("%d, %d, %d\n", count, to, from);
+    execute(count, from, to);
   }
-
-  execute(parsed);
-
-  free(token);
 
   return 0;
 }
@@ -88,8 +99,9 @@ void initialize()
 {
   for (int i = 0; i < 10; i++)
   {
-    if (i == 0) continue;
-    containers[i] = (char *)calloc(MAX_LEN, sizeof(char));
+    if (i == 0)
+      continue;
+    containers[i] = (char *)calloc(MAX_LEN, sizeof(char *));
     int len = strlen(startBoard[i]);
     strncpy(containers[i], startBoard[i], len);
   }
@@ -128,9 +140,10 @@ int main(int argc, char *argv[])
   printf("Opened file: %s\n", argv[1]);
 
   // read data
-  int answer = readLines(fp);
+  readLines(fp);
   printBoard();
 
+  errorCheck();
   fclose(fp);
   exit(1);
 
